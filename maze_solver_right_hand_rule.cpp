@@ -1,0 +1,207 @@
+//
+//  main.cpp
+//  Lab 12
+//  random_walk_intel_w_io.cpp
+//  Created by Courtney Jo Young
+//  Copyright © 2018 Courtney Jo Young. All rights reserved.
+//
+
+#include<stdio.h>
+#include<iostream>
+#include<fstream>
+#include<cmath>
+#include <cstdlib>
+#include<ctime>
+#include<vector>
+#include<string>
+using namespace std;
+
+class MazeSolver
+{
+public:
+    MazeSolver(){
+        maze = {
+            "|||||||||||||||",
+            "|nnnnnn|nnnnnn|",
+            "|nnnnnn|nnnnnn|",
+            "|nnnnnnnnnnnnn|",
+            "|nnnnnnnnnnnnn|",
+            "|nnnnnnnnnnnnn|",
+            "|nnn|nnnnn|nnn|",
+            "|nnn|nnnnn|nnn|",
+            "|||||||||||ddd|"};
+        placerobot();
+    }
+    MazeSolver(ifstream &mazefile)
+    {
+        fillmaze(mazefile);
+        placerobot();
+    }
+    void fillmaze(ifstream &mazefile)
+    {
+        mazefile.open("maze.txt");
+        string line;
+        while(!mazefile.eof())
+        {
+            getline(mazefile,line);
+            maze.push_back(line);
+            
+        }
+        mazefile.close();
+        
+    }
+    void placerobot()
+    {
+        while(1)
+        {
+            robotrow = rand() % maze.size();
+            robotcol = rand() % maze[0].length();
+            
+            if (maze[robotrow][robotcol] == 'n')
+            {
+                maze[robotrow][robotcol]= 'R';
+                return;
+            }
+        }
+    }
+    
+    void displaymaze()
+        {
+        for (int i = 0; i < maze.size(); i++)
+            cout << maze[i] << endl;
+        }
+    int randmove()
+    {
+        while (1)
+        {
+            int vert = rand() % 3 -1;
+            int horiz = rand() % 3 -1;
+           
+            if (maze[robotrow + vert][robotcol+ horiz] == 'n' || maze[robotrow + vert][robotcol+ horiz] == '.')
+            {
+                maze[robotrow][robotcol] = '.';
+                robotrow += vert;
+                robotcol += horiz;
+                maze[robotrow][robotcol] = 'R';
+                return 0;
+            }
+            else if (maze[robotrow + vert][robotcol+ horiz] == 'd')
+            {
+                maze[robotrow][robotcol] = '.';
+                robotrow += vert;
+                robotcol += horiz;
+                maze[robotrow][robotcol] = 'R';
+                return 1;
+            }
+        }
+    
+    }
+    
+    int move()
+    {
+       
+        
+        
+            
+            int vert = 0;
+            int horiz = 0;
+            
+            if (maze[robotrow -1][robotcol] == 'n' ||maze[robotrow -1][robotcol] == 'd')
+            {
+                 vert = -1;
+                 horiz = 0;
+            }
+            
+            else if (maze[robotrow -1][robotcol + 1] == 'n' ||maze[robotrow -1][robotcol+1] == 'd')
+            {
+                vert = -1;
+                horiz = 1;
+            }
+            
+            else if (maze[robotrow][robotcol+1] == 'n' ||maze[robotrow][robotcol+1] == 'd')
+            {
+                vert = 0;
+                horiz = 1;
+            }
+            
+            else if (maze[robotrow -1][robotcol] == 'n' ||maze[robotrow -1][robotcol] == 'd')
+            {
+                vert = -1;
+                horiz = 0;
+            }
+            
+            else if (maze[robotrow +1][robotcol+1] == 'n' ||maze[robotrow +1][robotcol+1] == 'd')
+            {
+                vert = 1;
+                horiz = 1;
+            }else if (maze[robotrow +1][robotcol] == 'n' ||maze[robotrow +1][robotcol] == 'd')
+            {
+                vert = 1;
+                horiz = 0;
+            }else if (maze[robotrow +1][robotcol-1] == 'n' ||maze[robotrow +1][robotcol-1] == 'd')
+            {
+                vert = 1;
+                horiz = -1;
+            }else if (maze[robotrow][robotcol-1] == 'n' ||maze[robotrow][robotcol-1] == 'd')
+            {
+                vert = 0;
+                horiz = -1;
+            }else if (maze[robotrow -1][robotcol-1] == 'n' ||maze[robotrow -1][robotcol-1] == 'd')
+            {
+                vert = -1;
+                horiz = -1;
+            }
+            else
+            {
+                return randmove();
+            }
+                
+            
+            
+            if (maze[robotrow + vert][robotcol+ horiz] == 'n')
+            {
+                maze[robotrow][robotcol] = '.';
+                robotrow += vert;
+                robotcol += horiz;
+                maze[robotrow][robotcol] = 'R';
+                return 0;
+            }
+            else if (maze[robotrow + vert][robotcol+ horiz] == 'd')
+            {
+                maze[robotrow][robotcol] = '.';
+                robotrow += vert;
+                robotcol += horiz;
+                maze[robotrow][robotcol] = 'R';
+                return 1;
+            }
+        return 0;
+    }
+
+    
+    
+    
+    void solve()
+    {
+        while (!move())
+        {
+            displaymaze();
+        }
+        displaymaze();
+       
+    }
+            private:
+            vector <string> maze;
+            int robotrow;
+            int robotcol;
+    
+            };
+
+
+int main() {
+    
+    srand(time(0));
+    ifstream mazefile;
+    MazeSolver herewego = MazeSolver(mazefile);
+    herewego.solve();
+    return 0;
+}
